@@ -257,5 +257,42 @@ public class library2 {
             System.out.println("No successful payment recorded.");
         }
     }
+
+    static void searchBook() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("--- Search Book Section ---");
+    sc.nextLine(); // Clear buffer
+
+    System.out.print("Enter book title or keyword to search: ");
+    String keyword = sc.nextLine().toLowerCase();
+
+    boolean found = false;
+
+    System.out.println("Search Results:");
+    for (int i = 0; i < bookTitles.length; i++) {
+        for (int j = 0; j < bookTitles[i].length; j++) {
+
+            if (bookTitles[i][j].toLowerCase().contains(keyword)) {
+                found = true;
+
+                String status = (bookBorrowers[i][j] == null)
+                        ? "Available"
+                        : "Borrowed by: " + bookBorrowers[i][j];
+
+                System.out.println("Title: " + bookTitles[i][j]);
+                System.out.println("Category: " + categories[i]);
+                System.out.println("Status: " + status);
+            }
+        }
+    }
+
+    if (!found) {
+        System.out.println("No books found matching keyword: " + keyword);
+    }
+
+    System.out.println();
+}
+
+
 }
 
