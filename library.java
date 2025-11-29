@@ -1,5 +1,6 @@
 import java.util.Scanner;
 
+
 public class library2 {
 
     // DECLARING OF ARRAY
@@ -49,25 +50,31 @@ public class library2 {
             System.out.println("5 |Exit|");
             System.out.print("Enter option: ");
             choice = sc.nextInt();
+            System.out.println(" ");
+
             if (choice == 1) {
                 System.out.println("Selected: Borrow Book");
+                System.out.println(" ");
                 borrowBook();
-                break;
+
             }
             else if (choice == 2) {
                 System.out.println("Selected: Return Book");
+                System.out.println(" ");
                 returnBook();
-                break;
+
             }
             else if (choice == 3) {
                 System.out.println("Selected: Check Available Books");
+                System.out.println(" ");
                 checkAvailableBooks();
-                break;
+
             }
             else if (choice == 4) {
                 System.out.println("Selected: Search Book");
-                //input method here
-                break;
+                System.out.println(" ");
+                searchBook();
+
             }
             else if (choice > 5) {
                 System.out.println("Invalid number, please try again.");
@@ -83,8 +90,10 @@ public class library2 {
         Scanner sc = new Scanner(System.in);
         System.out.println("--- Borrow Book Section ---");
 
+        // 1. Select category
         int cat = selectCategory();
 
+        // 2. Show available books
         System.out.println("Available " + categories[cat] + " Books:");
         boolean hasAvailable = false;
 
@@ -100,33 +109,74 @@ public class library2 {
             return;
         }
 
+        // 3. Select book
         int bookNum = readInt("Enter the book number you want to borrow: ",
                 1, bookTitles[cat].length);
         bookNum -= 1;
+        System.out.println(" ");
 
         if (bookBorrowers[cat][bookNum] != null) {
             System.out.println("Sorry, that book is already borrowed.");
             return;
         }
 
-        sc.nextLine();
+        // 4. Choose access type
+        System.out.println("Choose Access Type:");
+        System.out.println("1. Overnight (₱50)");
+        System.out.println("2. Multi-Day (₱100 × number of days)");
+        System.out.println("3. Monthly (₱1000)");
+        System.out.println(" ");
 
+        int accessType = readInt("Enter access type: ", 1, 3);
+
+        int days = 0;
+        double totalCost = 0;
+
+        if (accessType == 1) {
+            totalCost = 50;
+        }
+        else if (accessType == 2) {
+            days = readInt("Enter number of days: ", 1, 365);
+            totalCost = 100 * days;
+        }
+        else if (accessType == 3) {
+            totalCost = 1000;
+        }
+
+
+        // 5. Enter borrower name
         System.out.print("Enter your full name: ");
         String borrower = sc.nextLine();
+        System.out.println(" ");
 
+        // 6. Save borrowing record
         bookBorrowers[cat][bookNum] = borrower;
 
-        System.out.println("Borrowing Successful!");
-        System.out.println("Book Borrowed: " + bookTitles[cat][bookNum]);
+        // 7. Borrowing summary
+        System.out.println("--- BORROWING SUMMARY ---");
         System.out.println("Category: " + categories[cat]);
-        System.out.println("Borrower: " + borrower + " ");
+        System.out.println("Book: " + bookTitles[cat][bookNum]);
+        System.out.println("Borrower: " + borrower);
+
+        String accessName = "";
+        if (accessType == 1) accessName = "Overnight";
+        if (accessType == 2) accessName = "Multi-Day (" + days + " day/s)";
+        if (accessType == 3) accessName = "Monthly";
+
+        System.out.println("Access Type: " + accessName);
+        System.out.println("Total Cost: ₱" + totalCost);
+
+        // 8. Payment section
+        System.out.println("Proceeding to payment...");
+        System.out.println(" ");
+        payment(totalCost);
     }
+
 
     static void returnBook() {
         Scanner sc = new Scanner(System.in);
         System.out.println("--- Return Book Section ---");
 
-        sc.nextLine();
 
         System.out.print("Enter borrower's full name: ");
         String nameToFind = sc.nextLine();
@@ -139,7 +189,7 @@ public class library2 {
 
                 if (bookBorrowers[i][j] != null && bookBorrowers[i][j].equalsIgnoreCase(nameToFind)) {
 
-                    System.out.println("\nFound book: '" + bookTitles[i][j] + "' (Category: " + categories[i] + ")");
+                    System.out.println("Found book: '" + bookTitles[i][j] + "' (Category: " + categories[i] + ")");
 
                     bookBorrowers[i][j] = null;
 
@@ -155,7 +205,7 @@ public class library2 {
         }
 
         if (!found) {
-            System.out.println("\nNo active borrowing record found for: " + nameToFind);
+            System.out.println("No active borrowing record found for: " + nameToFind);
         }
         System.out.println();
     }
@@ -181,7 +231,20 @@ public class library2 {
         if (!thereIsAvailableBook) {
             System.out.println("No available copies in this category right now.");
         }
+        //return to main menu or quit, serve as stopper
         System.out.println();
+        System.out.println("\nWhat would you like to do next?");
+        System.out.println("1. Return to Main Menu");
+        System.out.println("2. Quit System");
+
+        int option = readInt("Enter option: ", 1, 2);
+
+        if (option == 1) {
+            return;  // Goes back to main menu loop
+        } else if (option == 2) {
+            System.out.println("Thank you for using the Library Management System!");
+            System.exit(0);
+        }
     }
 
     static int selectCategory() {
@@ -194,6 +257,7 @@ public class library2 {
         }
 
         int cat = readInt("Enter category number: ", 1, categories.length);
+        System.out.println(" ");
 
         return cat - 1;
     }
@@ -214,20 +278,21 @@ public class library2 {
         }
     }
 
-    public static boolean processPayment(double totalCost) {
+    public static boolean payment(double totalCost) {
         Scanner sc = new Scanner(System.in);
 
         System.out.println(" PAYMENT SECTION ");
         System.out.println("You need to pay: ₱" + totalCost);
 
         System.out.print("Enter your payment amount: ₱");
+        System.out.println(" ");
         double amountPaid = sc.nextDouble();
 
         paymentInfo[0] = totalCost;
         paymentInfo[1] = amountPaid;
 
         if (amountPaid < totalCost) {
-            System.out.println("\n PAYMENT FAILED");
+            System.out.println(" PAYMENT FAILED");
             System.out.println("You did not give enough money.");
             paymentInfo[3] = 0;
             return false;
@@ -237,7 +302,7 @@ public class library2 {
         paymentInfo[2] = change;
         paymentInfo[3] = 1;
 
-        System.out.println("\n PAYMENT SUCCESSFUL!");
+        System.out.println(" PAYMENT SUCCESSFUL!");
         System.out.println("Change:"+ change);
         System.out.println("Borrowing is now confirmed.");
 
@@ -245,7 +310,7 @@ public class library2 {
     }
 
     public static void displayPaymentDetails() {
-        System.out.println("\n LAST PAYMENT SUMMARY ");
+        System.out.println(" LAST PAYMENT SUMMARY ");
 
         if (paymentInfo[3] == 1) {
             System.out.println("Status: SUCCESS");
@@ -259,40 +324,38 @@ public class library2 {
     }
 
     static void searchBook() {
-    Scanner sc = new Scanner(System.in);
-    System.out.println("--- Search Book Section ---");
-    sc.nextLine(); // Clear buffer
+        Scanner sc = new Scanner(System.in);
+        System.out.println("--- Search Book Section ---");
 
-    System.out.print("Enter book title or keyword to search: ");
-    String keyword = sc.nextLine().toLowerCase();
+        System.out.print("Enter book title or keyword to search: ");
+        String keyword = sc.nextLine().toLowerCase();
 
-    boolean found = false;
+        boolean found = false;
 
-    System.out.println("Search Results:");
-    for (int i = 0; i < bookTitles.length; i++) {
-        for (int j = 0; j < bookTitles[i].length; j++) {
+        System.out.println("Search Results:");
+        for (int i = 0; i < bookTitles.length; i++) {
+            for (int j = 0; j < bookTitles[i].length; j++) {
 
-            if (bookTitles[i][j].toLowerCase().contains(keyword)) {
-                found = true;
+                if (bookTitles[i][j].toLowerCase().contains(keyword)) {
+                    found = true;
 
-                String status = (bookBorrowers[i][j] == null)
-                        ? "Available"
-                        : "Borrowed by: " + bookBorrowers[i][j];
+                    String status = (bookBorrowers[i][j] == null)
+                            ? "Available"
+                            : "Borrowed by: " + bookBorrowers[i][j];
 
-                System.out.println("Title: " + bookTitles[i][j]);
-                System.out.println("Category: " + categories[i]);
-                System.out.println("Status: " + status);
+                    System.out.println("Title: " + bookTitles[i][j]);
+                    System.out.println("Category: " + categories[i]);
+                    System.out.println("Status: " + status);
+                }
             }
         }
+
+        if (!found) {
+            System.out.println("No books found matching keyword: " + keyword);
+        }
+
+        System.out.println();
     }
 
-    if (!found) {
-        System.out.println("No books found matching keyword: " + keyword);
-    }
-
-    System.out.println();
-}
-
 
 }
-
